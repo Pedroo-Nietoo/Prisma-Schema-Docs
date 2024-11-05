@@ -4,23 +4,27 @@ const fs = require('fs');
 const path = require('path');
 const { getDMMF } = require('@prisma/internals');
 
-const schemaPath = path.join(__dirname, 'prisma/schema.prisma');
+// Altera o caminho para apontar para o diretório correto
+const schemaPath = path.join(process.cwd(), 'prisma/schema.prisma');
 
 async function main() {
     try {
+        console.log(`Looking for schema at: ${schemaPath}`);
         if (!fs.existsSync(schemaPath)) {
             throw new Error(`Schema file not found at ${schemaPath}. Please ensure the path is correct.`);
         }
 
         const models = await parsePrismaSchema(schemaPath);
         const htmlContent = generateHtmlDocumentation(models);
-        const docsDir = path.join(__dirname, 'docs');
-        
+        const docsDir = path.join(process.cwd(), 'docs');
+
+        // Cria o diretório de docs se não existir
         if (!fs.existsSync(docsDir)) {
             fs.mkdirSync(docsDir);
             console.log("Docs directory created.");
         }
-        
+
+        // Cria o arquivo index.html
         fs.writeFileSync(path.join(docsDir, 'index.html'), htmlContent, 'utf-8');
         console.log("Documentation generated! Check 'docs/index.html'");
     } catch (error) {
