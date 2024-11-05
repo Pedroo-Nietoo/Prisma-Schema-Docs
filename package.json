@@ -1,0 +1,28 @@
+{
+  "name": "prisma-schema-doc",
+  "version": "1.0.6",
+  "description": "Prisma docs generator for schema files",
+  "main": "index.js",
+  "scripts": {
+    "docs": "node index.js",
+    "test": "jest"
+  },
+  "bin": {
+    "prisma-schema-doc": "./index.js"
+  },
+  "keywords": [
+    "prisma",
+    "docs",
+    "documentation",
+    "schema"
+  ],
+  "author": "Pedroo-Nietoo",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/internals": "^5.21.1",
+    "prisma": "^5.21.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
