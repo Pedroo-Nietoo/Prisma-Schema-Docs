@@ -1,8 +1,8 @@
-# Prisma Schema Doc
+# Prisma Schema Docs
 
 ## Overview
 
-`prisma-schema-doc` is a simple command-line tool that generates HTML documentation for your Prisma schema files. This package reads your `schema.prisma` file and produces an easy-to-read documentation format for your models and their fields, including attributes like `@id`, `@unique`, `@default`, and `@relation`.
+`prisma-schema-docs` is a simple command-line tool that generates HTML documentation for your Prisma schema files. This package reads your `schema.prisma` file and produces an easy-to-read documentation format for your models and their fields, including attributes like `@id`, `@unique`, `@default`, and `@relation`.
 
 <br>
 
@@ -10,28 +10,28 @@
 
 ### Installation
 
-To install `prisma-schema-doc`, use npm:
+To install `prisma-schema-docs`, use npm:
 
 ```bash
-npm install prisma-schema-doc
+npm install prisma-schema-docs
 ```
 
 Or, if you prefer to install it globally:
 
 ```bash
-npm install -g prisma-schema-doc
+npm install -g prisma-schema-docs
 ```
 
 ### Generating Documentation
 Once installed, you can generate documentation by running the following command:
 
 ```bash
-npx prisma-schema-doc
+npx prisma-schema-docs
 ```
 
 This will create an `index.html` file in the `docs` directory, containing the generated documentation from your `prisma/schema.prisma`.
 
-To use `prisma-schema-doc`, ensure you have a `schema.prisma` file in the `prisma` directory of your project. The command will look for the schema file and generate the documentation based on its content.
+To use `prisma-schema-docs`, ensure you have a `schema.prisma` file in the `prisma` directory of your project. The command will look for the schema file and generate the documentation based on its content.
 
 <br>
 
