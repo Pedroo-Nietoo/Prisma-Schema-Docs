@@ -1,5 +1,5 @@
 {
-  "name": "@pedroo-nietoo/prisma-schema-docs",
+  "name": "prisma-schema-docs",
   "version": "1.0.4",
   "description": "Prisma docs generator for schema files",
   "main": "index.js",
@@ -16,9 +16,6 @@
     "documentation",
     "schema"
   ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "author": "Pedroo-Nietoo",
   "license": "MIT",
   "dependencies": {
