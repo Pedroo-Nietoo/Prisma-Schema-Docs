@@ -1,4 +1,5 @@
 # Prisma Schema Docs
+![Prisma Schema Docs Banner](./images/Prisma_Schema_Docs.png)
 
 ## Overview
 
