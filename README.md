@@ -1,5 +1,6 @@
 # Prisma Schema Docs
-![Prisma Schema Docs Banner](./images/Prisma_Schema_Docs.jpeg)
+
+<img alt="Prisma Schema Docs Banner" src="https://raw.githubusercontent.com/Pedroo-Nietoo/Prisma-Schema-Docs/main/images/Prisma_Schema_Docs.png" width="1200" />
 
 ## Overview
 
