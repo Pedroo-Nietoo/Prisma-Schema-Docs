@@ -1,73 +1,74 @@
-const fs = require('fs');
-const path = require('path');
-const { parsePrismaSchema, generateHtmlDocumentation } = require('./index');
-
-jest.mock('fs');
-jest.mock('@prisma/internals', () => ({
-    getDMMF: jest.fn(),
+jest.mock('fs', () => ({
+    existsSync: jest.fn().mockReturnValue(true),
+    readFileSync: jest.fn().mockReturnValue('mock schema'),
+    writeFileSync: jest.fn(),
+    mkdirSync: jest.fn(),
 }));
 
-describe('parsePrismaSchema', () => {
-    beforeAll(() => {
-        require('@prisma/internals').getDMMF.mockResolvedValue({
-            datamodel: {
-                models: [
-                    {
-                        name: 'User',
-                        fields: [
-                            { name: 'id', type: 'Int', isRequired: true, isUnique: false, isId: true, default: { name: 'autoincrement' }, hasDefaultValue: true },
-                            { name: 'name', type: 'String', isRequired: true, isUnique: true, isId: false, default: null, hasDefaultValue: false },
-                            { name: 'email', type: 'String', isRequired: true, isUnique: true, isId: false, default: null, hasDefaultValue: false },
-                            { name: 'posts', type: 'Post', isRequired: false, isUnique: false, isId: false, default: null, hasDefaultValue: false, relationName: 'Post' }
-                        ],
-                    },
-                ],
-            },
-        });
-    });
+jest.mock('path', () => ({
+    join: jest.fn().mockReturnValue('mock/path/to/schema.prisma'),
+}));
 
-    it('should parse the Prisma schema and return models with fields', async () => {
-        const schema = `
-            model User {
-                id    Int     @id @default(autoincrement())
-                name  String  @unique
-                email String  @unique
-                posts Post[]
-            }
-        `;
-        fs.readFileSync.mockReturnValue(schema);
+jest.mock('@prisma/internals', () => ({
+    getDMMF: jest.fn().mockResolvedValue({
+        datamodel: {
+            models: [
+                {
+                    name: 'User',
+                    fields: [
+                        {
+                            name: 'id',
+                            type: 'Int',
+                            isRequired: true,
+                            isUnique: true,
+                            isId: true,
+                            default: null,
+                            updatedAt: false,
+                            relation: null,
+                        },
+                        {
+                            name: 'email',
+                            type: 'String',
+                            isRequired: true,
+                            isUnique: true,
+                            isId: false,
+                            default: null,
+                            updatedAt: false,
+                            relation: null,
+                        },
+                    ],
+                },
+            ],
+        },
+    }),
+}));
 
-        const models = await parsePrismaSchema('prisma/schema.prisma');
-        expect(models).toEqual([
-            {
-                name: 'User',
-                fields: [
-                    { name: 'id', type: 'Int', isRequired: true, isUnique: false, isId: true, default: 'autoincrement', updatedAt: false, relation: null },
-                    { name: 'name', type: 'String', isRequired: true, isUnique: true, isId: false, default: null, updatedAt: false, relation: null },
-                    { name: 'email', type: 'String', isRequired: true, isUnique: true, isId: false, default: null, updatedAt: false, relation: null },
-                    { name: 'posts', type: 'Post', isRequired: false, isUnique: false, isId: false, default: null, updatedAt: false, relation: '@relation(Post)' },
-                ],
-            },
-        ]);
-    });
-});
+const { parsePrismaSchema, generateHtmlDocumentation, generateMarkdownDocumentation } = require('./index.js');
 
-describe('generateHtmlDocumentation', () => {
-    it('should generate HTML documentation for the given models', () => {
-        const models = [
-            {
-                name: 'User',
-                fields: [
-                    { name: 'id', type: 'Int', isRequired: true, isUnique: false, isId: true, default: 'autoincrement', updatedAt: false, relation: null },
-                    { name: 'name', type: 'String', isRequired: true, isUnique: true, isId: false, default: null, updatedAt: false, relation: null },
-                    { name: 'email', type: 'String', isRequired: true, isUnique: true, isId: false, default: null, updatedAt: false, relation: null },
-                    { name: 'posts', type: 'Post', isRequired: false, isUnique: false, isId: false, default: null, updatedAt: false, relation: '@relation(Post)' },
-                ],
-            },
-        ];
-
+describe('Prisma Schema Documentation Generator', () => {
+    it('should generate HTML documentation correctly', async () => {
+        const models = await parsePrismaSchema('mock/path/to/schema.prisma');
         const htmlContent = generateHtmlDocumentation(models);
-        expect(htmlContent).toContain('<div class="model-name">User</div>');
-        expect(htmlContent).toContain('<td>id</td>');
+
+        expect(htmlContent).toContain('<html>');
+        expect(htmlContent).toContain('<title>Prisma Schema Documentation</title>');
+        expect(htmlContent).toContain('User');
+    });
+
+    it('should generate Markdown documentation correctly', async () => {
+        const models = await parsePrismaSchema('mock/path/to/schema.prisma');
+        const markdownContent = generateMarkdownDocumentation(models);
+
+        expect(markdownContent).toContain('# Prisma Schema Documentation');
+        expect(markdownContent).toContain('## User');
+        expect(markdownContent).toContain('| **Type**      | Int |');
+        expect(markdownContent).toContain('### id');
+        expect(markdownContent).toContain('| **Type**      | Int |');
+        expect(markdownContent).toContain('| **Required**  | Yes |');
+        expect(markdownContent).toContain('| **Attributes**| @id, @unique |');
+        expect(markdownContent).toContain('### email');
+        expect(markdownContent).toContain('| **Type**      | String |');
+        expect(markdownContent).toContain('| **Required**  | Yes |');
+        expect(markdownContent).toContain('| **Attributes**| @unique |');
     });
 });

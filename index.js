@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { getDMMF } = require('@prisma/internals');
 
-// Altera o caminho para apontar para o diretório correto
+// Caminho do schema Prisma
 const schemaPath = path.join(process.cwd(), 'prisma/schema.prisma');
 
 async function main() {
@@ -77,7 +77,22 @@ function generateHtmlDocumentation(models) {
             .required { color: #D53F8C; font-weight: bold; }
             .optional { color: #718096; }
             .attribute { color: #2B6CB0; font-weight: bold; }
-            .relation { color: #6B46C1; font-style: italic; }
+            .relation { color: #6B46C1; font-style: italic; text-decoration: none; }
+            .button {
+                padding: 10px;
+                margin: 18px;
+                background-color: transparent;
+                color: #2e5972;
+                border: 1px solid #2e5972;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: 0.3s;
+            }
+            .button:hover {
+                background-color: #2e5972;
+                color: #fff;
+            }
             .model-link, .field-link {
                 color: #333; 
                 text-decoration: none; 
@@ -120,7 +135,10 @@ function generateHtmlDocumentation(models) {
     htmlContent += `
         </div>
         <div class="content">
-            <h1>Prisma Schema Documentation</h1>`;
+            <div style="display: flex; justify-content: space-between;">
+                <h1>Prisma Schema Documentation</h1>
+                <button class="button" onclick="exportMarkdown()">Export as Markdown</button>
+            </div>`;
 
     models.forEach(model => {
         htmlContent += `
@@ -129,28 +147,35 @@ function generateHtmlDocumentation(models) {
         
         model.fields.forEach(field => {
             const attributes = [];
-            if (field.isId) attributes.push('<span class="attribute">@id</span>');
-            if (field.isUnique) attributes.push('<span class="attribute">@unique</span>');
-            if (field.default) attributes.push(`<span class="attribute">@default(${field.default})</span>`);
-            if (field.updatedAt) attributes.push('<span class="attribute">@updatedAt</span>');
-            if (field.relation) attributes.push(`<span class="relation">${field.relation}</span>`);
+            if (field.isId) attributes.push('@id');
+            if (field.isUnique) attributes.push('@unique');
+            if (field.default) attributes.push(`@default(${field.default})`);
+            if (field.updatedAt) attributes.push('@updatedAt');
+            if (field.relation) attributes.push(`@relation(${field.type})`);
 
             htmlContent += `
             <div class="table-container" id="${model.name}-${field.name}">
                 <h2>${field.name}</h2>
+                <p><strong>Description:</strong> The '${field.name}' field from the ${model.name} model</p>
                 <table>
                     <thead>
                         <tr>
-                            <th>Field</th>
-                            <th>Type</th>
-                            <th>Attributes</th>
+                            <th>Parameter</th>
+                            <th>Value</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>${field.name}</td>
-                            <td>${field.type} <span class="${field.isRequired ? 'required' : 'optional'}">${field.isRequired ? 'Required' : 'Optional'}</span></td>
-                            <td>${attributes.join(', ')}</td>
+                            <td><strong>Type</strong></td>
+                            <td>${field.type}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Required</strong></td>
+                            <td><span class="${field.isRequired ? 'required' : 'optional'}">${field.isRequired ? 'Yes' : 'No'}</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Attributes</strong></td>
+                            <td>${attributes.join(', ') ? attributes.join(', ') : '-'}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -164,11 +189,77 @@ function generateHtmlDocumentation(models) {
     htmlContent += `
         </div>
     </body>
+    <script>
+        function generateMarkdownDocumentation(models) {
+            let markdownContent = '# Prisma Schema Documentation\\n\\n';
+            models.forEach(model => {
+                markdownContent += '## ' + model.name + '\\n\\n';
+                model.fields.forEach(field => {
+                    const attributes = [];
+                    if (field.isId) attributes.push('@id');
+                    if (field.isUnique) attributes.push('@unique');
+                    if (field.default) attributes.push('@default(' + field.default + ')');
+                    if (field.updatedAt) attributes.push('@updatedAt');
+                    if (field.relation) attributes.push('@relation(' + field.type + ')');
+
+                    markdownContent += '### ' + field.name + '\\n';
+                    markdownContent += '**Description**: The \' + field.name + \' field from the ' + model.name + ' model\\n\\n';
+                    markdownContent += '| Parameter     | Value        |\\n';
+                    markdownContent += '|---------------|--------------|\\n';
+                    markdownContent += '| **Type**      | ' + field.type + ' |\\n';
+                    markdownContent += '| **Required**  | ' + (field.isRequired ? 'Yes' : 'No') + ' |\\n';
+                    markdownContent += '| **Attributes**| ' + (attributes.join(', ') || '-') + ' |\\n\\n';
+                });
+                markdownContent += '\\n';
+            });
+            return markdownContent;
+        }
+
+        function downloadMarkdown(content) {
+            const blob = new Blob([content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'prisma_schema_documentation.md';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportMarkdown() {
+            const markdown = generateMarkdownDocumentation(${JSON.stringify(models)});
+            downloadMarkdown(markdown);
+        }
+    </script>
     </html>`;
 
     return htmlContent;
 }
 
-module.exports = { parsePrismaSchema, generateHtmlDocumentation };
+function generateMarkdownDocumentation(models) {
+    let markdownContent = '# Prisma Schema Documentation\\n\\n';
+    models.forEach(model => {
+        markdownContent += '## ' + model.name + '\\n\\n';
+        model.fields.forEach(field => {
+            const attributes = [];
+            if (field.isId) attributes.push('@id');
+            if (field.isUnique) attributes.push('@unique');
+            if (field.default) attributes.push('@default(' + field.default + ')');
+            if (field.updatedAt) attributes.push('@updatedAt');
+            if (field.relation) attributes.push('@relation(' + field.type + ')');
+
+            markdownContent += '### ' + field.name + '\\n';
+            markdownContent += '**Description**: The \' + field.name + \' field from the ' + model.name + ' model\\n\\n';
+            markdownContent += '| Parameter     | Value        |\\n';
+            markdownContent += '|---------------|--------------|\\n';
+            markdownContent += '| **Type**      | ' + field.type + ' |\\n';
+            markdownContent += '| **Required**  | ' + (field.isRequired ? 'Yes' : 'No') + ' |\\n';
+            markdownContent += '| **Attributes**| ' + (attributes.join(', ') || '-') + ' |\\n\\n';
+        });
+        markdownContent += '\\n';
+    });
+    return markdownContent;
+}
 
 main();
+
+module.exports = { parsePrismaSchema, generateHtmlDocumentation, generateMarkdownDocumentation };

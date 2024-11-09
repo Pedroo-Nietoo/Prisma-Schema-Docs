@@ -1,6 +1,6 @@
 {
   "name": "prisma-schema-docs",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Prisma docs generator for schema files",
   "main": "index.js",
   "scripts": {
@@ -12,8 +12,8 @@
   },
   "keywords": [
     "prisma",
-    "docs",
     "documentation",
+    "docs",
     "schema"
   ],
   "author": "Pedroo-Nietoo",
