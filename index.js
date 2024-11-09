@@ -4,7 +4,6 @@ const fs = require('fs');
 const path = require('path');
 const { getDMMF } = require('@prisma/internals');
 
-// Caminho do schema Prisma
 const schemaPath = path.join(process.cwd(), 'prisma/schema.prisma');
 
 async function main() {
@@ -18,13 +17,11 @@ async function main() {
         const htmlContent = generateHtmlDocumentation(models);
         const docsDir = path.join(process.cwd(), 'docs');
 
-        // Cria o diretório de docs se não existir
         if (!fs.existsSync(docsDir)) {
             fs.mkdirSync(docsDir);
             console.log("Docs directory created.");
         }
 
-        // Cria o arquivo index.html
         fs.writeFileSync(path.join(docsDir, 'index.html'), htmlContent, 'utf-8');
         console.log("Documentation generated! Check 'docs/index.html'");
     } catch (error) {
@@ -77,7 +74,7 @@ function generateHtmlDocumentation(models) {
             .required { color: #D53F8C; font-weight: bold; }
             .optional { color: #718096; }
             .attribute { color: #2B6CB0; font-weight: bold; }
-            .relation { color: #6B46C1; font-style: italic; text-decoration: none; }
+            .relation { color: #6B46C1; font-style: italic; text-decoration-style: wavy; }
             .button {
                 padding: 10px;
                 margin: 18px;
@@ -94,7 +91,7 @@ function generateHtmlDocumentation(models) {
                 color: #fff;
             }
             .model-link, .field-link {
-                color: #333; 
+                color: #333;
                 text-decoration: none; 
                 font-weight: bold; 
                 display: block; 
@@ -123,7 +120,6 @@ function generateHtmlDocumentation(models) {
             alt="Prisma Logo"
             style="width: 50px; margin-bottom: 20px; border-radius: 16px">
         <h2>Schema Models</h2>`;
-
     models.forEach(model => {
         htmlContent += `
             <a href="#${model.name}" class="model-link">${model.name}</a>
@@ -131,7 +127,6 @@ function generateHtmlDocumentation(models) {
                 ${model.fields.map(field => `<a href="#${model.name}-${field.name}" class="field-link">${field.name}</a>`).join('')}
             </div>`;
     });
-
     htmlContent += `
         </div>
         <div class="content">
@@ -139,7 +134,6 @@ function generateHtmlDocumentation(models) {
                 <h1>Prisma Schema Documentation</h1>
                 <button class="button" onclick="exportMarkdown()">Export as Markdown</button>
             </div>`;
-
     models.forEach(model => {
         htmlContent += `
         <div class="model model-spacing" id="${model.name}">
@@ -152,7 +146,6 @@ function generateHtmlDocumentation(models) {
             if (field.default) attributes.push(`@default(${field.default})`);
             if (field.updatedAt) attributes.push('@updatedAt');
             if (field.relation) attributes.push(`@relation(${field.type})`);
-
             htmlContent += `
             <div class="table-container" id="${model.name}-${field.name}">
                 <h2>${field.name}</h2>
@@ -175,17 +168,15 @@ function generateHtmlDocumentation(models) {
                         </tr>
                         <tr>
                             <td><strong>Attributes</strong></td>
-                            <td>${attributes.join(', ') ? attributes.join(', ') : '-'}</td>
+                            <td>${attributes.map(attr => attr.includes('@relation') ? `<a href="#${field.type}" class="relation">${attr}</a>` : `<span class="attribute">${attr}</span>`).join(', ') || '-'}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>`;
         });
-
         htmlContent += `
         </div>`;
     });
-
     htmlContent += `
         </div>
     </body>
@@ -201,7 +192,6 @@ function generateHtmlDocumentation(models) {
                     if (field.default) attributes.push('@default(' + field.default + ')');
                     if (field.updatedAt) attributes.push('@updatedAt');
                     if (field.relation) attributes.push('@relation(' + field.type + ')');
-
                     markdownContent += '### ' + field.name + '\\n';
                     markdownContent += '**Description**: The \' + field.name + \' field from the ' + model.name + ' model\\n\\n';
                     markdownContent += '| Parameter     | Value        |\\n';
@@ -214,7 +204,6 @@ function generateHtmlDocumentation(models) {
             });
             return markdownContent;
         }
-
         function downloadMarkdown(content) {
             const blob = new Blob([content], { type: 'text/markdown' });
             const url = URL.createObjectURL(blob);
@@ -224,14 +213,12 @@ function generateHtmlDocumentation(models) {
             a.click();
             URL.revokeObjectURL(url);
         }
-
         function exportMarkdown() {
             const markdown = generateMarkdownDocumentation(${JSON.stringify(models)});
             downloadMarkdown(markdown);
         }
     </script>
     </html>`;
-
     return htmlContent;
 }
 
