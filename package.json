@@ -1,6 +1,6 @@
 {
   "name": "prisma-schema-docs",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Prisma docs generator for schema files",
   "main": "index.js",
   "scripts": {
