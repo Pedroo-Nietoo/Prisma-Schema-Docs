@@ -1,12 +1,11 @@
 # Prisma Schema Docs
 
-![Project Banner](https://raw.githubusercontent.com/Pedroo-Nietoo/Prisma-Schema-Docs/main/images/Prisma_Schema_Docs.png)
+![Project Banner](https://raw.githubusercontent.com/Pedroo-Nietoo/Prisma-Schema-Docs/main/images/project_image.png)
 
 ## Overview
 
 `prisma-schema-docs` is a simple command-line tool that generates HTML documentation for your Prisma schema files. This package reads your `schema.prisma` file and produces an easy-to-read documentation format for your models and their fields, including attributes like `@id`, `@unique`, `@default`, and `@relation`.
 
-![Project Banner](https://raw.githubusercontent.com/Pedroo-Nietoo/Prisma-Schema-Docs/main/images/project_image.png)
 
 <br>
 
