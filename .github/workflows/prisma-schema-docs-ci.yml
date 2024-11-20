@@ -1,4 +1,4 @@
-name: prisma Schema Docs CI
+name: Prisma Schema Docs CI
 
 on:
   push:
