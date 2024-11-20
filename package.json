@@ -12,9 +12,11 @@
   },
   "keywords": [
     "prisma",
+    "schema",
     "documentation",
     "docs",
-    "schema"
+    "html",
+    "markdown"
   ],
   "author": "Pedroo-Nietoo",
   "license": "MIT",

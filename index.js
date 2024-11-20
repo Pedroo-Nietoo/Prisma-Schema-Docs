@@ -60,6 +60,7 @@ function generateHtmlDocumentation(models) {
     let htmlContent = `
     <html>
     <head>
+        <link rel="icon" href="https://avatars.githubusercontent.com/u/17219288?s=200&v=4" type="image/png">
         <title>Prisma Schema Documentation</title>
         <style>
             body { font-family: Arial, sans-serif; display: flex; color: #333; margin: 0 }
@@ -122,9 +123,9 @@ function generateHtmlDocumentation(models) {
         <h2>Schema Models</h2>`;
     models.forEach(model => {
         htmlContent += `
-            <a href="#${model.name}" class="model-link">${model.name}</a>
+            <a href="#${model.name}" class="model-link">${model.name.length > 30 ? model.name.slice(0, 27) + '...' : model.name}</a>
             <div class="model-fields">
-                ${model.fields.map(field => `<a href="#${model.name}-${field.name}" class="field-link">${field.name}</a>`).join('')}
+                ${model.fields.map(field => `<a href="#${model.name}-${field.name}" class="field-link">${field.name.length > 30 ? field.name.slice(0, 27) + '...' : field.name}</a>`).join('')}
             </div>`;
     });
     htmlContent += `

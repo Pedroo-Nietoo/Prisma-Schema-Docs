@@ -4,7 +4,7 @@
 
 ## Overview
 
-`prisma-schema-docs` is a simple command-line tool that generates HTML documentation for your Prisma schema files. This package reads your `schema.prisma` file and produces an easy-to-read documentation format for your models and their fields, including attributes like `@id`, `@unique`, `@default`, and `@relation`.
+The `prisma-schema-docs` is a simple command-line tool that generates HTML documentation for your Prisma schema files. This package reads your `schema.prisma` file and produces an easy-to-read documentation format for your models and their fields, including attributes like `@id`, `@unique`, `@default`, and `@relation`.
 
 
 <br>
