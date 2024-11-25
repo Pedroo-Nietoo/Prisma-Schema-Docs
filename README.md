@@ -32,6 +32,12 @@ Once installed, you can generate documentation by running the following command:
 npx prisma-schema-docs
 ```
 
+Or, if you prefer to generate the documentation on dark mode:
+
+```bash
+npx prisma-schema-docs -d
+```
+
 This will create an `index.html` file in the `docs` directory, containing the generated documentation from your `prisma/schema.prisma`.
 
 To use `prisma-schema-docs`, ensure you have a `schema.prisma` file in the `prisma` directory of your project. The command will look for the schema file and generate the documentation based on its content.

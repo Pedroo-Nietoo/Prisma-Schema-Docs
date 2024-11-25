@@ -7,6 +7,9 @@ const { getDMMF } = require('@prisma/internals');
 const schemaPath = path.join(process.cwd(), 'prisma/schema.prisma');
 
 async function main() {
+    const args = process.argv.slice(2);
+    const isDarkMode = args.includes('-d') || args.includes('--dark')
+
     try {
         console.log(`Looking for schema at: ${schemaPath}`);
         if (!fs.existsSync(schemaPath)) {
@@ -14,7 +17,7 @@ async function main() {
         }
 
         const models = await parsePrismaSchema(schemaPath);
-        const htmlContent = generateHtmlDocumentation(models);
+        const htmlContent = generateHtmlDocumentation(models, isDarkMode);
         const docsDir = path.join(process.cwd(), 'docs');
 
         if (!fs.existsSync(docsDir)) {
@@ -56,14 +59,65 @@ async function parsePrismaSchema(filePath) {
     }
 }
 
-function generateHtmlDocumentation(models) {
-    let htmlContent = `
-    <html>
-    <head>
-        <link rel="icon" href="https://avatars.githubusercontent.com/u/17219288?s=200&v=4" type="image/png">
-        <title>Prisma Schema Documentation</title>
-        <style>
-            body { font-family: Arial, sans-serif; display: flex; color: #333; margin: 0 }
+function generateHtmlDocumentation(models, isDarkMode) {
+    const darkThemeCSS = `
+        body { font-family: Arial, sans-serif; display: flex; color: #e0e0e0; margin: 0; background-color: #121212; }
+        .sidebar { width: 250px; padding: 20px; background-color: #1e1e1e; position: fixed; height: 100vh; overflow-y: auto; }
+        .content { margin-left: 270px; padding: 50px; flex-grow: 1; background-color: #121212; }
+        .model { margin-bottom: 40px; }
+        .model-name { font-size: 24px; font-weight: bold; color: #90caf9; }
+        .table-container { margin-top: 10px; padding: 10px; border-radius: 5px; background-color: #1e1e1e; }
+        table { width: 100%; color: #e0e0e0; border-collapse: collapse; }
+        th, td { padding: 8px 12px; text-align: left; border: 1px solid #333; }
+        th { background-color: #333; color: #90caf9; }
+        .required { color: #f06292; font-weight: bold; }
+        .optional { color: #a0a0a0; }
+        .attribute { color: #64b5f6; font-weight: bold; }
+        .relation { color: #ba68c8; font-style: italic; text-decoration-style: wavy; }
+        .button {
+            padding: 10px;
+            margin: 18px;
+            background-color: transparent;
+            color: #90caf9;
+            border: 1px solid #90caf9;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        h2 {
+            margin-top: 5px;
+        }
+        .button:hover {
+            background-color: #90caf9;
+            color: #121212;
+        }
+        .model-link, .field-link {
+            color: #e0e0e0;
+            text-decoration: none; 
+            font-weight: bold; 
+            display: block; 
+            margin-bottom: 8px; 
+        }
+        .model-fields {
+            border-left: 2px solid #333;
+            padding-left: 10px;
+            margin-bottom: 20px;
+        }
+        .field-link { 
+            padding: 4px 0;
+            color: #a0a0a0;
+        }
+        .field-link:hover, .model-link:hover {
+            color: #90caf9;
+        }
+        .model-spacing {
+            margin-bottom: 150px;
+        }
+    `;
+
+    const lightThemeCSS = `
+        body { font-family: Arial, sans-serif; display: flex; color: #333; margin: 0 }
             .sidebar { width: 250px; padding: 20px; background-color: #f0f0f0; position: fixed; height: 100vh; overflow-y: auto; }
             .content { margin-left: 270px; padding: 50px; flex-grow: 1; background-color: #fff; }
             .model { margin-bottom: 40px; }
@@ -113,6 +167,17 @@ function generateHtmlDocumentation(models) {
             .model-spacing {
                 margin-bottom: 150px;
             }
+    `;
+
+    const themeCSS = isDarkMode ? darkThemeCSS : lightThemeCSS;
+
+    let htmlContent = `
+    <html>
+    <head>
+        <link rel="icon" href="https://avatars.githubusercontent.com/u/17219288?s=200&v=4" type="image/png">
+        <title>Prisma Schema Documentation</title>
+        <style>
+            ${themeCSS}
         </style>
     </head>
     <body>

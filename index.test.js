@@ -46,9 +46,18 @@ jest.mock('@prisma/internals', () => ({
 const { parsePrismaSchema, generateHtmlDocumentation, generateMarkdownDocumentation } = require('./index.js');
 
 describe('Prisma Schema Documentation Generator', () => {
-    it('should generate HTML documentation correctly', async () => {
+    it('should generate light theme HTML documentation correctly', async () => {
         const models = await parsePrismaSchema('mock/path/to/schema.prisma');
-        const htmlContent = generateHtmlDocumentation(models);
+        const htmlContent = generateHtmlDocumentation(models, false);
+
+        expect(htmlContent).toContain('<html>');
+        expect(htmlContent).toContain('<title>Prisma Schema Documentation</title>');
+        expect(htmlContent).toContain('User');
+    });
+
+    it('should generate dark theme HTML documentation correctly', async () => {
+        const models = await parsePrismaSchema('mock/path/to/schema.prisma');
+        const htmlContent = generateHtmlDocumentation(models, true);
 
         expect(htmlContent).toContain('<html>');
         expect(htmlContent).toContain('<title>Prisma Schema Documentation</title>');
